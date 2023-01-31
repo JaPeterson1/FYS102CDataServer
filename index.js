@@ -41,7 +41,7 @@ app.use(express.static(dir));
 
 //When url is pulled up send the date range selection window
 app.get('/', (req, res) => {
-    res.sendFile(__dirname+'/public/start.html');
+    res.sendFile(__dirname+'/public/main.html');
 })
 
 //The date range selector redirects to this url with a date range in the query string, send graph viewer page back
