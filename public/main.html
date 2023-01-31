@@ -46,6 +46,10 @@
                 background-color:rgb(216, 112, 112);
                 color: #ffffff;
             }
+            #mainChart {
+                height:auto;
+                width:100vw;
+            }
         </style>
         <div id="dateRangeSelector">
             <label for=start>Start Date:</label>
@@ -55,10 +59,9 @@
             <button id="submit" onclick = "update()">View Data</button>
             <span id="flag"><center>Please enter a valid date!</center></span>
         </div>
+        <canvas id="mainChart"></canvas>
     <script>
-        import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-        import React from "react";
-        var data = {}
+        import Chart from 'chart.js';
         function update() {
             startDate = document.getElementById("start").value;
             endDate = document.getElementById("end").value;
@@ -68,7 +71,12 @@
                 document.getElementById("flag").style.display="none";
             }
             fetch('../getData?start='+startDate+"&end="+endDate).then(
-                (response) => response.json()).then((dataJson)=>{console.log(dataJson)})
+                (response) => response.json()).then((dataJson)=>{
+                    var data = dataJson;
+                    console.log(dataJson)
+                    const ctx = document.getElementById('mainChart');
+                    
+                })
         }
 
     </script>
