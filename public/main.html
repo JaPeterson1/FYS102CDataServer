@@ -37,8 +37,9 @@
                 background-color: #3b3b3b;
             }
             #dateRangeToolbar {
+                display:block;
                 width:100vw;
-                height:10vw;
+                height:10vh;
             }
             #flag {
                 display:none;
@@ -47,11 +48,17 @@
                 color: #ffffff;
             }
             #mainChart {
-                height:auto;
-                width:100vw;
+                display:block;
+                margin:0px;
+                width:100%;
+                height:90vh;
+            }
+            #chartContainer {
+                height:90vh;
+                width: 100vw;
             }
         </style>
-        <div id="dateRangeSelector">
+        <div id="dateRangeToolbar">
             <label for=start>Start Date:</label>
             <input type="date" id="start">
             <label for=end>End Date:</label>
@@ -59,9 +66,12 @@
             <button id="submit" onclick = "update()">View Data</button>
             <span id="flag"><center>Please enter a valid date!</center></span>
         </div>
-        <canvas id="mainChart"></canvas>
+        <div id="chartContainer">
+            <canvas id="mainChart"></canvas>
+        </div>
+    <script src="chart.js"></script>
     <script>
-        import Chart from 'chart.js';
+        ctx = document.getElementById("mainChart");
         function update() {
             startDate = document.getElementById("start").value;
             endDate = document.getElementById("end").value;
@@ -72,10 +82,129 @@
             }
             fetch('../getData?start='+startDate+"&end="+endDate).then(
                 (response) => response.json()).then((dataJson)=>{
+                    //Now we have json data for all the datapoints
                     var data = dataJson;
-                    console.log(dataJson)
-                    const ctx = document.getElementById('mainChart');
-                    
+                    var solarPower = [];
+                    var windPower = [];
+                    var solarIntensity = [];
+                    var windIntensity = [];
+                    var timestamps = [];
+
+                    function parseTimestamp(timestamp) {
+                        dateTime = timestamp.split("T");
+                        dateTime[1] = dateTime[1].split(".")[0];
+                        date = dateTime[0].split("-")
+                        dateStr = date[1]+"/"+date[2]+"/"+date[0];
+                        time = dateTime[1].split(":");
+                        timeStr = time[0]+":"+time[1];
+                        return dateStr + " " + timeStr;
+                    }
+
+                    const ctx = document.getElementById('mainChart').getContext("2d");
+                    for(i=0; i<data.length; i++) {
+                        console.log(data[i]);
+                        solarPower.push(data[i]["solarPower"]);
+                        windPower.push(data[i]["windPower"]);
+                        windIntensity.push(data[i]["windSpeed"]);
+                        solarIntensity.push(data[i]["solarIntensity"]);
+                        timestamps.push(parseTimestamp(data[i]["t1"]));
+                    }
+                    //Create Line Chart
+                    data = {
+                        labels: timestamps, 
+                        datasets: [{
+                            label: "Solar Power", 
+                            data: solarPower,
+                            fill:false,
+                            borderColor: 'rgb(255,0,255)',
+                            tension: 0.1,
+                            yAxisID: 'watts'
+                        },
+                        {
+                            label: "Wind Power", 
+                            data: windPower,
+                            fill:false,
+                            borderColor: 'rgb(0,255,255)',
+                            tension: 0.1,
+                            yAxisID: 'watts'
+                        },
+                        {
+                            label: "Wind speed", 
+                            data: windIntensity,
+                            fill:false,
+                            borderColor: 'rgb(255,255,0)',
+                            tension: 0.1,
+                            yAxisID: 'mph'
+                        },
+                        {
+                            label: "Solar irradiance", 
+                            data: solarIntensity,
+                            fill:false,
+                            borderColor: 'rgb(127,127,255)',
+                            tension: 0.1,
+                            yAxisID: 'irradiance'
+                        }]
+                    }
+                    options = {
+                        scales: {
+                            watts: {
+                                type: 'linear',
+                                display: true,
+                                position: 'left',
+                                ticks: {
+                                    callback: function(value, index, ticks) {
+                                        return value+" watts";
+                                    }
+                                }
+                            },
+                            mph: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                grid: {
+                                drawOnChartArea: false,
+                                }, 
+                                ticks: {
+                                    callback: function(value, index, ticks) {
+                                        return value+" mph";
+                                    }
+                                }
+                            },
+                            irradiance: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                grid: {
+                                drawOnChartArea: false,
+                                }, 
+                                ticks: {
+                                    callback: function(value, index, ticks) {
+                                        return value+" w/m^2";
+                                    }
+                                }
+                            }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                        mode: 'index',
+                        intersect: false,
+                        },
+                        stacked: false,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Linear Trend Comparison'
+                            }
+                        }
+                    }
+
+                    config = {
+                        type: 'line', 
+                        data: data,
+                        options: options,
+                    };
+                    chart = new Chart(ctx, config);
                 })
         }
 
