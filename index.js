@@ -56,10 +56,6 @@ app.get('/getData', (req, res) => {
     }
 })
 
-app.get("/viewer", (req, res) => {
-    res.sendFile(__dirname+"/public/viewer.html");
-})
-
 //Python code will post json data to this, and it will be appended to the server. 
 app.post('/dataInput', (req, res) => {
     console.log(req.body)
