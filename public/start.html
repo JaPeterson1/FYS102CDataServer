@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+    <body>
+        <style>
+            @font-face{
+                font-family: 'Label';
+                src: url('./fonts/Roboto-Black.ttf');
+            }
+            @font-face{
+                font-family: 'header';
+                src: url('./fonts/klavika-bold.otf');
+            }
+            html, body {
+                margin: 0px;
+                background-color: #27251F;
+            }
+            label {
+                display:inline-block;
+                font-family: 'Label';
+                color: #ffffff;
+                font-size: 1.25rem;
+            }
+            input, button {
+                display:inline-block;
+                background: transparent;
+                border-style: solid;
+                border-color: #FFDB00;
+                background-color: #1b1b1b;
+                color: #ffffff;
+                margin: .4rem 0;
+                font-size: 1.25rem;
+                border-radius: 1rem;
+            }
+            #submit {
+                font-family: 'Label';
+            }
+            #submit:hover {
+                background-color: #3b3b3b;
+            }
+            #dateRangeToolbar {
+                width:100vw;
+                height:10vw;
+            }
+            #flag {
+                display:none;
+                width:100vw;
+                background-color:rgb(216, 112, 112);
+                color: #ffffff;
+            }
+        </style>
+        <div id="dateRangeSelector">
+            <label for=start>Start Date:</label>
+            <input type="date" id="start">
+            <label for=end>End Date:</label>
+            <input type="date" id="end">
+            <button id="submit" onclick = "submit()">View Data</button>
+            <span id="flag"><center>Please enter a valid date!</center></span>
+        </div>
+    <script>
+        function submit() {
+            startDate = document.getElementById("start").value;
+            endDate = document.getElementById("end").value;
+            if(startDate=="" || endDate == "") {
+                document.getElementById("flag").style.display="block";
+            } else {
+                document.getElementById("flag").style.display="none";
+            }
+            fetch('../getData?start='+startDate+"&end="+endDate).then(
+                (response) => response.json()).then((data)=>console.log(data))
+        }
+    </script>
+    </body>
+</html>

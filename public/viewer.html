@@ -1,0 +1,19 @@
+<html>
+    <body>
+        Hello
+        <script>
+            dates = window.location.search.split("?")[1].split("&")
+            startDate = ""; endDate = ""
+            for(i=0; i<dates.length; i++) {
+                queryDate = dates[i].split("=")
+                if(queryDate[0]=="start") {
+                    startDate = queryDate[1]
+                } else if(queryDate[0]=="end") {
+                    endDate = queryDate[1]
+                }
+            }
+            fetch('../getData?start='+startDate+"&end="+endDate).then(
+                (response) => response.json()).then((data)=>console.log(data))
+        </script>
+    </body>
+</html>
