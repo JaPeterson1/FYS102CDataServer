@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
 //The date range selector redirects to this url with a date range in the query string, send graph viewer page back
 app.get('/getData', (req, res) => {
     if(req.query["start"] && req.query["end"]) {
-        sqlConnection.query("SELECT * FROM datapoints WHERE (t1>='"+req.query["start"]+"' AND '"+req.query["end"]+"')", function (err, result) {
+        sqlConnection.query("SELECT * FROM datapoints WHERE (t1>='"+req.query["start"]+"' AND t1<='"+req.query["end"]+"')", function (err, result) {
             if (err) throw err;
             res.json(result);
         });
